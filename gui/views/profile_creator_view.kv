@@ -1,0 +1,185 @@
+# Файл: dream_team_core/gui/views/profile_creator_view.kv
+
+<ProfileCreatorView>:
+    orientation: 'vertical'
+    spacing: 10
+    padding: 10
+
+    # Верхняя часть: Лого и Заголовок (пока очень просто)
+    BoxLayout:
+        size_hint_y: None
+        height: "120dp" # Высота для лого и заголовка
+        spacing: 10
+
+        Image:
+            source: 'gui/assets/Logo.jpg' # Путь к вашему лого
+            size_hint_x: None
+            width: "150dp" # Ширина логотипа
+            allow_stretch: True
+            keep_ratio: True
+        
+        Label:
+            text: "Создание Профиля Нового Агента"
+            font_size: '24sp'
+            halign: 'center'
+            valign: 'middle'
+            size_hint_y: None
+            height: self.texture_size[1] + dp(20) # Автовысота + отступ
+
+    # Разделитель
+    BoxLayout:
+        size_hint_y: None
+        height: "1dp"
+        canvas.before:
+            Color:
+                rgba: 0.5, 0.5, 0.5, 1 # Цвет линии
+            Line:
+                points: self.x, self.y + self.height / 2, self.x + self.width, self.y + self.height / 2
+
+    # Основная форма ввода и вывода
+    BoxLayout:
+        orientation: 'horizontal'
+        spacing: 20
+
+        # Левая колонка: Поля ввода
+        ScrollView: # Позволит прокручивать, если полей много
+            size_hint_x: 0.4 # Левая колонка занимает 40% ширины
+            GridLayout:
+                cols: 1
+                spacing: 10
+                size_hint_y: None
+                height: self.minimum_height # Для работы ScrollView
+
+                Label:
+                    text: "API Ключ GPTunnel:"
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    halign: 'left'
+                    text_size: self.width, None
+                TextInput:
+                    id: api_key_input
+                    hint_text: "Введите ваш API ключ..."
+                    password: True # Скрывать вводимые символы
+                    multiline: False
+                    size_hint_y: None
+                    height: "40dp"
+
+                Label:
+                    text: "Имя/Кодовое имя Агента:"
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    halign: 'left'
+                    text_size: self.width, None
+                TextInput:
+                    id: agent_name_input
+                    hint_text: "Например, 'Оракул-7' или 'Агент Спарк'"
+                    multiline: False
+                    size_hint_y: None
+                    height: "40dp"
+
+                Label:
+                    text: "Роль Агента:"
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    halign: 'left'
+                    text_size: self.width, None
+                TextInput:
+                    id: agent_role_input
+                    hint_text: "Например, 'Главный аналитик' или 'Творческий консультант'"
+                    size_hint_y: None
+                    height: "60dp" # Чуть больше для возможного многострочного ввода (хотя тут multiline: False по умолчанию)
+                
+                # --- Имитация других настроек ---
+                Label:
+                    text: "Задачи Агента (кратко):"
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    halign: 'left'
+                    text_size: self.width, None
+                TextInput:
+                    id: agent_tasks_input # Добавим id
+                    hint_text: "Ключевые обязанности"
+                    size_hint_y: None
+                    height: "80dp" # Поле побольше
+                    multiline: True # Разрешим несколько строк
+
+                Label:
+                    text: "Описание внешности/фото (если есть):"
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    halign: 'left'
+                    text_size: self.width, None
+                TextInput:
+                    id: agent_photo_desc_input # Добавим id
+                    hint_text: "Опишите ключевые черты или атмосферу фото"
+                    size_hint_y: None
+                    height: "100dp"
+                    multiline: True
+                
+                # Кнопка "Прикрепить фото" (пока без функционала загрузки)
+                Button:
+                    text: "Выбрать файл фото (Заглушка)"
+                    size_hint_y: None
+                    height: "40dp"
+                    # on_press: root.select_photo_action() # Позже добавим функцию
+
+                # Выбор модели (пока заглушка, потом заполним из API)
+                Label:
+                    text: "Модель GPTunnel для генерации:"
+                    size_hint_y: None
+                    height: self.texture_size[1]
+                    halign: 'left'
+                    text_size: self.width, None
+                Spinner: # Выпадающий список
+                    id: model_selector_spinner
+                    text: "Выберите модель..." # Текст по умолчанию
+                    values: ["deepseek-r1 (Пример)", "gpt-4o-mini (Пример)", "Загрузка..."] # Заглушки
+                    size_hint_y: None
+                    height: "40dp"
+                    # on_text: root.on_model_selected(spinner_instance.text) # Позже
+
+                # Кнопки действий
+                BoxLayout:
+                    size_hint_y: None
+                    height: "50dp"
+                    spacing: 10
+                    Button:
+                        text: "Сгенерировать Профиль"
+                        on_press: root.generate_profile_action()
+                    Button:
+                        text: "Очистить Поля"
+                        on_press: root.clear_fields_action()
+
+        # Правая колонка: Вывод сгенерированного профиля
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_x: 0.6 # Правая колонка занимает 60%
+            spacing: 10
+            
+            Label:
+                text: "Сгенерированный Профиль Агента:"
+                font_size: '18sp'
+                size_hint_y: None
+                height: self.texture_size[1]
+            
+            ScrollView: # Для прокрутки длинного текста профиля
+                TextInput:
+                    id: generated_profile_output
+                    text: "Здесь будет результат..."
+                    readonly: True # Только для чтения
+                    font_size: '14sp'
+                    # background_color: (0.9, 0.9, 0.9, 1) # Слегка другой фон
+                    # foreground_color: (0.1, 0.1, 0.1, 1)
+            
+            Button:
+                text: "Копировать Профиль в Буфер"
+                size_hint_y: None
+                height: "40dp"
+                on_press: root.copy_profile_action()
+
+
+    Label: # Статус-бар или место для подсказок внизу
+        id: status_label
+        text: "Подсказка: Заполните поля и нажмите 'Сгенерировать Профиль'. API ключ обязателен."
+        size_hint_y: None
+        height: "30dp"
